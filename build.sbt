@@ -31,15 +31,14 @@ scalacOptions ++= Seq(
   "-language:implicitConversions",
   "-Xlint",
   "-Yno-adapted-args",
-  "-Ywarn-numeric-widen")
+  "-Ywarn-numeric-widen"
+)
 upgradeGuid := "5EC7F244-24F9-4E1C-B19D-591626C50F02"
 GenericKeys.manufacturer := "Me"
 WinPlugin.windowsSettings
 forceStopOnUninstall := true
 winSwExe in Windows := (pkgHome in Windows).value.resolve("WinSW.NET2.exe")
 useTerminateProcess := true
-mainClass in Windows := Option("unused")
-
 buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, "gitHash" -> gitHash)
 buildInfoPackage := "com.malliina.pn"
 
