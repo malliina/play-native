@@ -1,16 +1,23 @@
 import com.malliina.sbt.GenericKeys
-import com.malliina.sbt.win.WinKeys
+import com.malliina.sbt.GenericKeys.pkgHome
+import com.malliina.sbt.win.WinKeys._
+import com.malliina.sbt.win.WinPlugin
 
-lazy val p = project.in(file("."))
-  .enablePlugins(PlayScala, SbtNativePackager)
+import scala.sys.process.Process
+import scala.util.Try
 
-organization := "com.github.malliina"
-version := "0.1.0"
+lazy val native = project.in(file("."))
+  .enablePlugins(PlayScala, SbtNativePackager, BuildInfoPlugin)
+
+organization := "com.malliina"
+version := "0.1.8"
 scalaVersion := "2.12.6"
 retrieveManaged := false
 fork in Test := true
 resolvers += Resolver.jcenterRepo
-mainClass := Some("com.mle.play.Starter")
+libraryDependencies ++= Seq(
+  "com.lihaoyi" %% "scalatags" % "0.6.7"
+)
 exportJars := true
 javacOptions ++= Seq("-source", "1.8", "-target", "1.8")
 scalacOptions ++= Seq(
@@ -25,5 +32,16 @@ scalacOptions ++= Seq(
   "-Xlint",
   "-Yno-adapted-args",
   "-Ywarn-numeric-widen")
-WinKeys.upgradeGuid := "5EC7F244-24F9-4E1C-B19D-591626C50F02"
+upgradeGuid := "5EC7F244-24F9-4E1C-B19D-591626C50F02"
 GenericKeys.manufacturer := "Me"
+WinPlugin.windowsSettings
+forceStopOnUninstall := true
+winSwExe in Windows := (pkgHome in Windows).value.resolve("WinSW.NET2.exe")
+useTerminateProcess := true
+mainClass in Windows := Option("unused")
+
+buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, "gitHash" -> gitHash)
+buildInfoPackage := "com.malliina.pn"
+
+def gitHash: String =
+  Try(Process("git rev-parse --short HEAD").lineStream.head).toOption.getOrElse("unknown")
